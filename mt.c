@@ -130,28 +130,28 @@ static void mtwist_update_state(mtwist* mt) {
  *
  * Return value: unsigned long with 32 valid bits
  */
-    unsigned long mtwist_u32rand(mtwist* mt) {
-        uint32_t r;
+unsigned long mtwist_u32rand(mtwist* mt) {
+    uint32_t r;
 
-        if (!mt) return 0UL;
+    if (!mt) return 0UL;
 
-        if (!mt->seeded) mtwist_init(mt, mtwist_seed_from_system(mt));
+    if (!mt->seeded) mtwist_init(mt, mtwist_seed_from_system(mt));
 
-        if (!mt->remaining) mtwist_update_state(mt);
+    if (!mt->remaining) mtwist_update_state(mt);
 
-        r = *mt->next++;
-        mt->remaining--;
+    r = *mt->next++;
+    mt->remaining--;
 
-        /* Tempering */
-        r ^= (r >> 11);
-        r ^= (r << 7) & UINT32_C(0x9D2C5680);
-        r ^= (r << 15) & UINT32_C(0xEFC60000);
-        r ^= (r >> 18);
+    /* Tempering */
+    r ^= (r >> 11);
+    r ^= (r << 7) & UINT32_C(0x9D2C5680);
+    r ^= (r << 15) & UINT32_C(0xEFC60000);
+    r ^= (r >> 18);
 
-        r &= MTWIST_FULL_MASK;
+    r &= MTWIST_FULL_MASK;
 
-        return (unsigned long)r;
-    }
+    return (unsigned long)r;
+}
 
 /**
  * mtwist_drand:
@@ -161,15 +161,15 @@ static void mtwist_update_state(mtwist* mt) {
  *
  * Return value: random double in the range 0.0 inclusive to 1.0 exclusive;
  *[0.0, 1.0) */
-    double mtwist_drand(mtwist* mt) {
-        unsigned long r;
-        double d;
+double mtwist_drand(mtwist* mt) {
+    unsigned long r;
+    double d;
 
-        if (!mt) return 0.0;
+    if (!mt) return 0.0;
 
-        r = mtwist_u32rand(mt);
+    r = mtwist_u32rand(mt);
 
-        d = r / 4294967296.0; /* 2^32 */
+    d = r / 4294967296.0; /* 2^32 */
 
-        return d;
-    }
+    return d;
+}
