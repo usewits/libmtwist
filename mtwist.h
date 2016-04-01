@@ -37,10 +37,10 @@
 /* Mersenne Twister library state */
 struct mtwist_s {
     /* MT buffer holding N 32 bit unsigned integers */
-    uint32_t state[MTWIST_N];
+    unsigned int state[MTWIST_N];
 
-    /* Pointer into above - next long to use */
-    uint32_t* next;
+    /* Pointer into above - next int to use */
+    unsigned int* next;
 
     /* Number of remaining integers in state before an update is needed */
     unsigned int remaining;
@@ -61,9 +61,9 @@ mtwist* mtwist_new(void);
 void mtwist_free(mtwist* mt);
 
 /* methods */
-void mtwist_init(mtwist* mt, unsigned long seed);
-unsigned long mtwist_u32rand(mtwist* mt);
+void mtwist_init(mtwist* mt, unsigned int seed);
+unsigned int mtwist_u32rand(mtwist* mt);
 double mtwist_drand(mtwist* mt);
 
 /* utility functions */
-unsigned long mtwist_seed_from_system(mtwist* mt);
+unsigned int mtwist_seed_from_system(mtwist* mt);

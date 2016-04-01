@@ -29,6 +29,7 @@
  *
  */
 
+#include <stdlib.h>
 #include <mtwist.h>
 
 /*
@@ -39,16 +40,16 @@
  *
  */
 
-#define MTWIST_UPPER_MASK UINT32_C(0x80000000)
-#define MTWIST_LOWER_MASK UINT32_C(0x7FFFFFFF)
-#define MTWIST_FULL_MASK UINT32_C(0xFFFFFFFF)
+#define MTWIST_UPPER_MASK 0x80000000UL
+#define MTWIST_LOWER_MASK 0x7FFFFFFFUL
+#define MTWIST_FULL_MASK 0xFFFFFFFFUL
 
-#define MTWIST_MATRIX_A UINT32_C(0x9908B0DF)
+#define MTWIST_MATRIX_A 0x9908B0DFUL
 
 #define MTWIST_MIXBITS(u, v) (((u)&MTWIST_UPPER_MASK) | ((v)&MTWIST_LOWER_MASK))
 #define MTWIST_TWIST(u, v)       \
     ((MTWIST_MIXBITS(u, v) >> 1) ^ \
-     ((v)&UINT32_C(1) ? MTWIST_MATRIX_A : UINT32_C(0)))
+     ((v)&1UL ? MTWIST_MATRIX_A : 0UL))
 
 /**
  * mtwist_new:
@@ -87,15 +88,15 @@ void mtwist_free(mtwist* mt) {
  *
  * Initialise a Mersenne Twister with an unsigned 32 bit int seed
  */
-void mtwist_init(mtwist* mt, unsigned long seed) {
+void mtwist_init(mtwist* mt, unsigned int seed) {
     int i;
 
     if (!mt) return;
 
-    mt->state[0] = (uint32_t)(seed & MTWIST_FULL_MASK);
+    mt->state[0] = (unsigned int)(seed & MTWIST_FULL_MASK);
     for (i = 1; i < MTWIST_N; i++) {
         mt->state[i] =
-            (UINT32_C(1812433253) * (mt->state[i - 1] ^ (mt->state[i - 1] >> 30)) +
+            (1812433253UL * (mt->state[i - 1] ^ (mt->state[i - 1] >> 30)) +
              i);
         mt->state[i] &= MTWIST_FULL_MASK;
     }
@@ -108,7 +109,7 @@ void mtwist_init(mtwist* mt, unsigned long seed) {
 
 static void mtwist_update_state(mtwist* mt) {
     int count;
-    uint32_t* p = mt->state;
+    unsigned int* p = mt->state;
 
     for (count = (MTWIST_N - MTWIST_M + 1); --count; p++)
         *p = p[MTWIST_M] ^ MTWIST_TWIST(p[0], p[1]);
@@ -128,14 +129,14 @@ static void mtwist_update_state(mtwist* mt) {
  *
  * Get a random unsigned 32 bit integer from the random number generator
  *
- * Return value: unsigned long with 32 valid bits
+ * Return value: unsigned int with 32 valid bits
  */
-unsigned long mtwist_u32rand(mtwist* mt) {
-    uint32_t r;
+unsigned int mtwist_u32rand(mtwist* mt) {
+    unsigned int r;
 
     if (!mt) return 0UL;
 
-    if (!mt->seeded) mtwist_init(mt, mtwist_seed_from_system(mt));
+    if (!mt->seeded) mtwist_init(mt, 0);
 
     if (!mt->remaining) mtwist_update_state(mt);
 
@@ -144,13 +145,13 @@ unsigned long mtwist_u32rand(mtwist* mt) {
 
     /* Tempering */
     r ^= (r >> 11);
-    r ^= (r << 7) & UINT32_C(0x9D2C5680);
-    r ^= (r << 15) & UINT32_C(0xEFC60000);
+    r ^= (r << 7) & 0x9D2C5680UL;
+    r ^= (r << 15) & 0xEFC60000UL;
     r ^= (r >> 18);
 
     r &= MTWIST_FULL_MASK;
 
-    return (unsigned long)r;
+    return (unsigned int)r;
 }
 
 /**
@@ -162,7 +163,7 @@ unsigned long mtwist_u32rand(mtwist* mt) {
  * Return value: random double in the range 0.0 inclusive to 1.0 exclusive;
  *[0.0, 1.0) */
 double mtwist_drand(mtwist* mt) {
-    unsigned long r;
+    unsigned int r;
     double d;
 
     if (!mt) return 0.0;
