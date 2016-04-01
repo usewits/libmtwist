@@ -26,32 +26,31 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  * For more information, please refer to <http://unlicense.org/>
- * 
+ *
  */
 
-#define MTWIST_N             624
-#define MTWIST_M             397
+#define MTWIST_N 624
+#define MTWIST_M 397
 
 #define MT_STATIC_SEED 5489UL
 
 /* Mersenne Twister library state */
 struct mtwist_s {
-  /* MT buffer holding N 32 bit unsigned integers */
-  uint32_t state[MTWIST_N];
+    /* MT buffer holding N 32 bit unsigned integers */
+    uint32_t state[MTWIST_N];
 
-  /* Pointer into above - next long to use */
-  uint32_t* next;
+    /* Pointer into above - next long to use */
+    uint32_t* next;
 
-  /* Number of remaining integers in state before an update is needed */
-  unsigned int remaining;
+    /* Number of remaining integers in state before an update is needed */
+    unsigned int remaining;
 
-  /* 1 if a seed was given */
-  unsigned int seeded : 1;
+    /* 1 if a seed was given */
+    unsigned int seeded : 1;
 
-  /* 1 to always return a static system seed (MT_STATIC_SEED) */
-  unsigned int static_system_seed : 1;
+    /* 1 to always return a static system seed (MT_STATIC_SEED) */
+    unsigned int static_system_seed : 1;
 };
-
 
 /* Mersenne Twister state */
 typedef struct mtwist_s mtwist;
@@ -68,4 +67,3 @@ double mtwist_drand(mtwist* mt);
 
 /* utility functions */
 unsigned long mtwist_seed_from_system(mtwist* mt);
-
