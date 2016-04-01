@@ -1,13 +1,7 @@
 *.a
-*.deps
-*.dylib
-*.libs
-*.lo
 *.log
 *.o
-*.plist
-*.so*
-*.trs
+*.swp
 *~
 Makefile
 mttest
