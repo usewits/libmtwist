@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * mt.c - Mersenne Twister functions
+ * mtwist.c - Mersenne Twister functions
  *
  * This is free and unencumbered software released into the public domain.
  *
