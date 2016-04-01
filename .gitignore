@@ -9,16 +9,5 @@
 *.so*
 *.trs
 *~
-CMakeCache.txt
-CMakeFiles/
-CTestTestfile.cmake
-DartConfiguration.tcl
 Makefile
-Makefile.in
-TAGS
-Testing/
-cmake_install.cmake
-install_manifest.txt
-libmtwist.la
 mttest
-mttest.exe
