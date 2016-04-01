@@ -43,7 +43,6 @@
 #define MTWIST_UPPER_MASK 0x80000000UL
 #define MTWIST_LOWER_MASK 0x7FFFFFFFUL
 #define MTWIST_FULL_MASK 0xFFFFFFFFUL
-
 #define MTWIST_MATRIX_A 0x9908B0DFUL
 
 #define MTWIST_MIXBITS(u, v) (((u)&MTWIST_UPPER_MASK) | ((v)&MTWIST_LOWER_MASK))
@@ -82,13 +81,13 @@ void mtwist_free(mtwist* mt) {
 }
 
 /**
- * mtwist_init:
+ * mtwist_seed:
  * @mt: mt object
  * @seed: seed (lower 32 bits used)
  *
  * Initialise a Mersenne Twister with an unsigned 32 bit int seed
  */
-void mtwist_init(mtwist* mt, unsigned int seed) {
+void mtwist_seed(mtwist* mt, unsigned int seed) {
     int i;
 
     if (!mt) return;
@@ -136,7 +135,7 @@ unsigned int mtwist_u32rand(mtwist* mt) {
 
     if (!mt) return 0UL;
 
-    if (!mt->seeded) mtwist_init(mt, 0);
+    if (!mt->seeded) mtwist_seed(mt, 0);
 
     if (!mt->remaining) mtwist_update_state(mt);
 

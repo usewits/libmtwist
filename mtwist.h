@@ -32,8 +32,6 @@
 #define MTWIST_N 624
 #define MTWIST_M 397
 
-#define MT_STATIC_SEED 5489UL
-
 /* Mersenne Twister library state */
 struct mtwist_s {
     /* MT buffer holding N 32 bit unsigned integers */
@@ -47,9 +45,6 @@ struct mtwist_s {
 
     /* 1 if a seed was given */
     unsigned int seeded : 1;
-
-    /* 1 to always return a static system seed (MT_STATIC_SEED) */
-    unsigned int static_system_seed : 1;
 };
 
 /* Mersenne Twister state */
@@ -57,13 +52,11 @@ typedef struct mtwist_s mtwist;
 
 /* constructor */
 mtwist* mtwist_new(void);
+
 /* destructor */
 void mtwist_free(mtwist* mt);
 
 /* methods */
-void mtwist_init(mtwist* mt, unsigned int seed);
+void mtwist_seed(mtwist* mt, unsigned int seed);
 unsigned int mtwist_u32rand(mtwist* mt);
 double mtwist_drand(mtwist* mt);
-
-/* utility functions */
-unsigned int mtwist_seed_from_system(mtwist* mt);

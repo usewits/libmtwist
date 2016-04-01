@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
         goto tidy;
     }
 
-    mtwist_init(mt, TEST_SEED);
+    mtwist_seed(mt, TEST_SEED);
 
     for (test = 0; test < N_TESTS; test++) {
         int check = 0;
