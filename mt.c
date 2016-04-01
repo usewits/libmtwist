@@ -30,30 +30,7 @@
  */
 
 
-#ifdef MTWIST_CONFIG
-#include <mtwist_config.h>
-#endif
-
-#include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STDINT_H
-/* To get UINT32_C */
-#define __STDC_CONSTANT_MACROS 1
-#include <stdint.h>
-#else
-/* pessimistic - use an unsigned long */
-typedef unsigned long uint32_t;
-#define UINT32_C(v) (v ## UL)
-#endif
-
-
 #include <mtwist.h>
-
-#include <mtwist_internal.h>
 
 /*
  * Mersenne Twister (MT19937) algorithm
