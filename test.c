@@ -1,139 +1,84 @@
-/* -*- Mode: c; c-basic-offset: 2 -*-
- *
- * test.c - Mersenne Twister tests
- *
- * This is free and unencumbered software released into the public domain.
- *
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to <http://unlicense.org/>
- *
- */
-
-#ifdef MTWIST_CONFIG
-#include <mtwist_config.h>
-#endif
-
 #include <stdio.h>
-
+#include <stdlib.h>
+#include <time.h>
 #include <mtwist.h>
 
-int main(int argc, char *argv[]);
-
-#define N_TESTS 1000
-
-#define TEST_SEED 54321U
-
-/* test set 1: results 0..19 */
-#define TEST_SET_1_START 0
-#define TEST_SET_1_END 19
-#define TEST_SET_1_NRESULTS (TEST_SET_1_END - TEST_SET_1_START + 1)
-
-static unsigned long const test_seed_54321_results_1[TEST_SET_1_NRESULTS] = {
-    3915467345UL, 2189234826UL, 2679307290UL,
-    787501152UL,  3400771556UL, 3473638550UL,
-    1845911630UL, 4027756818UL, 2332222920UL,
-    127158527UL,  1775789767UL, 3371479562UL,
-    367824108UL,  703848432UL,  3339822589UL,
-    1863375487UL, 2100022882UL, 2466459787UL,
-    217027622UL,  932105407UL};
-#define TEST_SET_1_RESULTS test_seed_54321_results_1
-
-/* test set 2: results 622..629 */
-#define TEST_SET_2_START 622
-#define TEST_SET_2_END 629
-#define TEST_SET_2_NRESULTS (TEST_SET_2_END - TEST_SET_2_START + 1)
-static unsigned long const test_seed_54321_results_2[TEST_SET_2_NRESULTS] = {
-    2109020469UL, 264978304UL,  3951898066UL,
-    3322908472UL, 2243665931UL, 3379990241UL,
-    1427746768UL, 3217532946UL};
-#define TEST_SET_2_RESULTS test_seed_54321_results_2
-
-/* test set 3: results 990..999 */
-#define TEST_SET_3_START 990
-#define TEST_SET_3_END 999
-#define TEST_SET_3_NRESULTS (TEST_SET_3_END - TEST_SET_3_START + 1)
-static unsigned long const test_seed_54321_results_3[TEST_SET_3_NRESULTS] = {
-    4262956485UL, 2083563531UL, 1724557607UL,
-    4100776152UL, 4050777500UL, 3146323433UL,
-    2882918002UL, 3891093309UL, 1534503088UL,
-    1821071197UL};
-#define TEST_SET_3_RESULTS test_seed_54321_results_3
+int* results_mt;
+int* results_std;
+int* results_nop;
 
 int main(int argc, char *argv[]) {
-    const char *program = argv[0];
-    int failures = 0;
-    int test;
+    const int n_bins = 32;
+    long long n_tests = 1000000000;
+    clock_t start, end;
+    double t_mt;
+    double t_std;
+    double t_nop;
+
+    results_mt  = calloc(n_bins, sizeof(int));
+    results_std = calloc(n_bins, sizeof(int));
+    results_nop = calloc(n_bins, sizeof(int));
+
     mtwist *mt = NULL;
-
-    if (argc != 1) return 1;
-
     mt = mtwist_new();
-    if (!mt) {
-        fprintf(stderr, "%s: mtwist_new() failed\n", program);
-        failures++;
-        goto tidy;
+    mtwist_seed(mt, 3915467345UL);
+   
+    if(RAND_MAX % n_bins != 0) {
+        printf("NO UNIFORM STD_RAND! RAND_MAX = %d\n", RAND_MAX);
+    } 
+    unsigned long long mt_max = (1LL<<32LL)-1;
+    if(mt_max % n_bins != 0) {
+        printf("NO UNIFORM mt_rand! mt_max = %u\n", mt_max);
     }
 
-    mtwist_seed(mt, TEST_SEED);
-
-    for (test = 0; test < N_TESTS; test++) {
-        int check = 0;
-        unsigned long expected_v;
-        unsigned long v;
-
-        v = mtwist_u32rand(mt);
-
-        if (test >= TEST_SET_1_START && test <= TEST_SET_1_END) {
-            check = 1;
-            expected_v = TEST_SET_1_RESULTS[test - TEST_SET_1_START];
-        } else if (test >= TEST_SET_2_START && test <= TEST_SET_2_END) {
-            check = 1;
-            expected_v = TEST_SET_2_RESULTS[test - TEST_SET_2_START];
-        } else if (test >= TEST_SET_3_START && test <= TEST_SET_3_END) {
-            check = 1;
-            expected_v = TEST_SET_3_RESULTS[test - TEST_SET_3_START];
-        }
-
-        if (check && v != expected_v) {
-            fprintf(stderr, "%s: Test %3d returned value: %lu expected %lu\n",
-                    program, test, v, expected_v);
-            failures++;
-        } else {
-#if defined(DEBUG) && DEBUG > 1
-            if (check)
-                fprintf(stderr, "%s: Test %3d returned expected value: %lu OK\n",
-                        program, test, v);
-            else
-                fprintf(stderr, "%s: Test %3d returned value: %lu OK\n", program, test,
-                        v);
-#endif
-        }
+    start = clock();
+    for(long long i=0; i<n_tests; i++) {
+        unsigned long mt_rand  = mtwist_u32rand(mt);
+        results_mt [mt_rand  % n_bins]++;
     }
+    end = clock();
+    t_mt = (end-start)/(double)CLOCKS_PER_SEC;
 
-    fprintf(stdout, "%s: Returned %d failures\n", program, failures);
+    start = clock();
+    for(long long i=0; i<n_tests; i++) {
+        unsigned long std_rand = rand();
+        results_std[std_rand % n_bins]++;
+    }
+    end = clock();
+    t_std = (end-start)/(double)CLOCKS_PER_SEC;
 
-tidy:
-    if (mt) mtwist_free(mt);
+    start = clock();
 
-    return failures;
+    unsigned long nop_rand = 391546734UL; 
+    for(long long i=0; i<n_tests; i++) {
+        nop_rand = (nop_rand*928+9298)%3915467345UL;
+        results_nop[nop_rand % n_bins]++;
+    }
+    end = clock();
+    t_nop = (end-start)/(double)CLOCKS_PER_SEC;
+
+
+    printf("results_mt = {");
+    for(int i=0; i<n_bins; i++) {
+        if(i != 0) printf(",");
+        printf("%d", results_mt[i]);
+    }
+    printf("};\n");
+    printf("mt ran in %f seconds!\n", t_mt);
+
+    printf("results_std = {");
+    for(int i=0; i<n_bins; i++) {
+        if(i != 0) printf(",");
+        printf("%d", results_std[i]);
+    }
+    printf("};\n");
+    printf("std ran in %f seconds!\n", t_std);
+
+    printf("nop ran in %f seconds!\n", t_nop);
+
+    mtwist_free(mt);
+    free(results_mt);
+    free(results_std);
+
+    return 0;
 }

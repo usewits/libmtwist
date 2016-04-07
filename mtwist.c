@@ -150,7 +150,7 @@ unsigned int mtwist_u32rand(mtwist* mt) {
 
     r &= MTWIST_FULL_MASK;
 
-    return (unsigned int)r;
+    return r;
 }
 
 /**
