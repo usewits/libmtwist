@@ -3,5 +3,6 @@
 *.o
 *.swp
 *~
-Makefile
-mttest
+*.txt
+test_mt
+compare_rngs
