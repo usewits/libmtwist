@@ -130,7 +130,7 @@ static void mtwist_update_state(mtwist* mt) {
  *
  * Return value: unsigned int with 32 valid bits
  */
-unsigned int mtwist_u32rand(mtwist* mt) {
+inline unsigned int mtwist_u32rand(mtwist* mt) {
     unsigned int r;
 
     if (!mt) return 0UL;
@@ -186,6 +186,7 @@ double mtwist_drand(mtwist* mt) {
  * [a,b] 
  */
 int mtwist_uniform_int(mtwist* mt, int a, int b) {
+    return mtwist_u32rand(mt)%b;
     if(b < a) {//invalid range!
         return 0;
     }

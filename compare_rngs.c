@@ -5,19 +5,19 @@
 
 int* results_mt;
 int* results_std;
-int* results_nop;
+int* results_mt_uni;
 
 int main(int argc, char *argv[]) {
     const int n_bins = 32;
-    long long n_tests = 1000000000;
+    long long n_tests = 100000000;
     clock_t start, end;
     double t_mt;
     double t_std;
-    double t_nop;
+    double t_mt_uni;
 
     results_mt  = calloc(n_bins, sizeof(int));
     results_std = calloc(n_bins, sizeof(int));
-    results_nop = calloc(n_bins, sizeof(int));
+    results_mt_uni = calloc(n_bins, sizeof(int));
 
     mtwist *mt = NULL;
     mt = mtwist_new();
@@ -49,13 +49,13 @@ int main(int argc, char *argv[]) {
 
     start = clock();
 
-    unsigned long nop_rand = 391546734UL; 
+    unsigned long mt_uni_rand = 391546734UL; 
     for(long long i=0; i<n_tests; i++) {
-        nop_rand = (nop_rand*928+9298)%3915467345UL;
-        results_nop[nop_rand % n_bins]++;
+        mt_uni_rand = mtwist_uniform_int(mt,0,n_bins-1);
+        results_mt_uni[mt_uni_rand]++;
     }
     end = clock();
-    t_nop = (end-start)/(double)CLOCKS_PER_SEC;
+    t_mt_uni = (end-start)/(double)CLOCKS_PER_SEC;
 
 
     printf("results_mt = {");
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     printf("};\n");
     printf("std ran in %f seconds!\n", t_std);
 
-    printf("nop ran in %f seconds!\n", t_nop);
+    printf("mt_uni ran in %f seconds!\n", t_mt_uni);
 
     mtwist_free(mt);
     free(results_mt);
