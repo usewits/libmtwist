@@ -1,3 +1,4 @@
+all: test_mt compare_rngs
 test_mt: test_mt.c mtwist.c
 	gcc -O3 -o test_mt test_mt.c mtwist.c -I.
 compare_rngs: compare_rngs.c mtwist.c
