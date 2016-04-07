@@ -173,3 +173,42 @@ double mtwist_drand(mtwist* mt) {
 
     return d;
 }
+
+
+/**
+ * mtwist_uniform_int:
+ * @a, b; two integers such that a<=b
+ *
+ * Get an int in an interval uniform randomly from the
+ * random number generator.
+ *
+ * Return value: random interval in range a inclusive to b inclusive;
+ * [a,b] 
+ */
+int mtwist_uniform_int(mtwist* mt, int a, int b) {
+    if(b < a) {//invalid range!
+        return 0;
+    }
+    unsigned int range = b-a+1;
+    unsigned int scale = 4294967295UL/range;
+        //4294967295UL=2^32-1=RAND_MAX for this Mersenne Twister
+    unsigned int max_x = range*scale;
+    //x will be uniform in [0, max_x[
+    //Since past%range=0, x%range will be uniform in [0,range[
+    unsigned int x; 
+    do {
+        x = mtwist_u32rand(mt);
+    } while(x >= max_x);
+
+    return a+(x/scale);
+    //x is uniform in [0,max_x[ = [0,range*scale[
+    //hence x/scale is uniform in [0,range[=[0,b-a+1[
+    //thus a+(x/scale) is uniform in [a,b]
+    
+    //alternative: return a+(x%range); 
+    //x is uniform in [0,max_x[ = [0,range*scale[
+    //hence (x%range) is uniform in [0,range[=[0,b-a+1[
+    //thus a+(x%range) is uniform in [a,b]
+}
+
+
