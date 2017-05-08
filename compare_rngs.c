@@ -9,7 +9,8 @@ int* results_mt_uni;
 
 int main(int argc, char *argv[]) {
     const int n_bins = 32;
-    long long n_tests = 100000000;
+    int n_tests = 100000000;
+    int i;
     clock_t start, end;
     double t_mt;
     double t_std;
@@ -32,7 +33,7 @@ int main(int argc, char *argv[]) {
     }
 
     start = clock();
-    for(long long i=0; i<n_tests; i++) {
+    for(i=0; i<n_tests; i++) {
         unsigned long mt_rand  = mtwist_u32rand(mt);
         results_mt [mt_rand  % n_bins]++;
     }
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]) {
     t_mt = (end-start)/(double)CLOCKS_PER_SEC;
 
     start = clock();
-    for(long long i=0; i<n_tests; i++) {
+    for(i=0; i<n_tests; i++) {
         unsigned long std_rand = rand();
         results_std[std_rand % n_bins]++;
     }
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) {
     start = clock();
 
     unsigned long mt_uni_rand = 391546734UL; 
-    for(long long i=0; i<n_tests; i++) {
+    for(i=0; i<n_tests; i++) {
         mt_uni_rand = mtwist_uniform_int(mt,0,n_bins-1);
         results_mt_uni[mt_uni_rand]++;
     }
@@ -59,7 +60,7 @@ int main(int argc, char *argv[]) {
 
 
     printf("results_mt = {");
-    for(int i=0; i<n_bins; i++) {
+    for(i=0; i<n_bins; i++) {
         if(i != 0) printf(",");
         printf("%d", results_mt[i]);
     }
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]) {
     printf("mt ran in %f seconds!\n", t_mt);
 
     printf("results_std = {");
-    for(int i=0; i<n_bins; i++) {
+    for(i=0; i<n_bins; i++) {
         if(i != 0) printf(",");
         printf("%d", results_std[i]);
     }

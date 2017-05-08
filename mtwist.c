@@ -161,7 +161,7 @@ inline unsigned int mtwist_u32rand(mtwist* mt) {
  *
  * Return value: random double in the range 0.0 inclusive to 1.0 exclusive;
  *[0.0, 1.0) */
-double mtwist_drand(mtwist* mt) {
+inline double mtwist_drand(mtwist* mt) {
     unsigned int r;
     double d;
 
@@ -185,8 +185,7 @@ double mtwist_drand(mtwist* mt) {
  * Return value: random interval in range a inclusive to b inclusive;
  * [a,b] 
  */
-int mtwist_uniform_int(mtwist* mt, int a, int b) {
-    return mtwist_u32rand(mt)%b;
+inline int mtwist_uniform_int(mtwist* mt, int a, int b) {
     if(b < a) {//invalid range!
         return 0;
     }
@@ -211,5 +210,3 @@ int mtwist_uniform_int(mtwist* mt, int a, int b) {
     //hence (x%range) is uniform in [0,range[=[0,b-a+1[
     //thus a+(x%range) is uniform in [a,b]
 }
-
-
